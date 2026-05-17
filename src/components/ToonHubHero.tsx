@@ -155,6 +155,205 @@ function getRoleStyle(role: Role, isMobile: boolean): RoleStyle {
   }
 }
 
+// ─── Confetti ────────────────────────────────────────────────────────────────
+
+interface ConfettiPiece {
+  id: number
+  x: number
+  color: string
+  size: number
+  rotation: number
+  duration: number
+  delay: number
+  shape: 'rect' | 'circle' | 'star'
+  drift: number
+}
+
+function ConfettiBurst({ active, colors }: { active: boolean; colors: string[] }) {
+  const [pieces, setPieces] = useState<ConfettiPiece[]>([])
+  const counterRef = useRef(0)
+
+  useEffect(() => {
+    if (!active) return
+    const newPieces: ConfettiPiece[] = Array.from({ length: 60 }, () => ({
+      id: counterRef.current++,
+      x: 20 + Math.random() * 60,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: 6 + Math.random() * 10,
+      rotation: Math.random() * 360,
+      duration: 900 + Math.random() * 800,
+      delay: Math.random() * 300,
+      shape: (['rect', 'circle', 'star'] as const)[Math.floor(Math.random() * 3)],
+      drift: (Math.random() - 0.5) * 200,
+    }))
+    setPieces(newPieces)
+    const t = setTimeout(() => setPieces([]), 2000)
+    return () => clearTimeout(t)
+  }, [active, colors])
+
+  if (pieces.length === 0) return null
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 200, overflow: 'hidden' }}>
+      {pieces.map((p) => (
+        <div
+          key={p.id}
+          style={{
+            position: 'absolute',
+            left: `${p.x}%`,
+            top: '-20px',
+            width: p.size,
+            height: p.shape === 'circle' ? p.size : p.size * 0.6,
+            background: p.shape === 'star' ? 'transparent' : p.color,
+            borderRadius: p.shape === 'circle' ? '50%' : 2,
+            animation: `confettiFall ${p.duration}ms cubic-bezier(0.25,0.46,0.45,0.94) ${p.delay}ms forwards`,
+            '--drift': `${p.drift}px`,
+            '--rot': `${p.rotation + 720}deg`,
+          } as React.CSSProperties}
+        >
+          {p.shape === 'star' && (
+            <svg width={p.size} height={p.size} viewBox="0 0 24 24">
+              <polygon points="12,2 15,9 22,9 16.5,14 18.5,21 12,17 5.5,21 7.5,14 2,9 9,9" fill={p.color} />
+            </svg>
+          )}
+        </div>
+      ))}
+      <style>{`
+        @keyframes confettiFall {
+          0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
+          70%  { opacity: 1; }
+          100% { transform: translateY(100vh) translateX(var(--drift)) rotate(var(--rot)); opacity: 0; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// ─── 3D Tilt + Idle float center figure ──────────────────────────────────────
+
+function CenterFigure({
+  src,
+  alt,
+  isMobile,
+  onClick,
+  isCarouselAnimating,
+}: {
+  src: string
+  alt: string
+  isMobile: boolean
+  onClick: () => void
+  isCarouselAnimating: boolean
+}) {
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const tiltRef = useRef({ x: 0, y: 0 })
+  const frameRef = useRef<number>(0)
+  const lastMouseRef = useRef(0)
+  const [tiltStyle, setTiltStyle] = useState({ rotateX: 0, rotateY: 0, scale: 1 })
+
+  // Idle float: sine wave on Y axis when mouse hasn't moved for 2s
+  useEffect(() => {
+    let start: number | null = null
+    const animate = (ts: number) => {
+      if (start === null) start = ts
+      const elapsed = ts - start
+      const idleSecs = (ts - lastMouseRef.current) / 1000
+
+      if (idleSecs > 2 && !isCarouselAnimating) {
+        const floatY = Math.sin(elapsed / 900) * 6
+        const floatX = Math.sin(elapsed / 1400) * 2
+        setTiltStyle({ rotateX: floatX, rotateY: floatY * 0.5, scale: 1 })
+        tiltRef.current = { x: 0, y: 0 }
+      }
+      frameRef.current = requestAnimationFrame(animate)
+    }
+    frameRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(frameRef.current)
+  }, [isCarouselAnimating])
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const el = wrapRef.current
+    if (!el) return
+    lastMouseRef.current = performance.now()
+    const rect = el.getBoundingClientRect()
+    const cx = rect.left + rect.width / 2
+    const cy = rect.top + rect.height / 2
+    const dx = (e.clientX - cx) / (rect.width / 2)   // -1 to 1
+    const dy = (e.clientY - cy) / (rect.height / 2)  // -1 to 1
+    // Smooth lerp toward target
+    tiltRef.current = { x: dx * 14, y: dy * 10 }
+    setTiltStyle({ rotateX: -dy * 10, rotateY: dx * 14, scale: 1.01 })
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    setTiltStyle({ rotateX: 0, rotateY: 0, scale: 1 })
+  }, [])
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    const el = wrapRef.current
+    if (!el) return
+    lastMouseRef.current = performance.now()
+    const touch = e.touches[0]
+    const rect = el.getBoundingClientRect()
+    const cx = rect.left + rect.width / 2
+    const cy = rect.top + rect.height / 2
+    const dx = (touch.clientX - cx) / (rect.width / 2)
+    const dy = (touch.clientY - cy) / (rect.height / 2)
+    setTiltStyle({ rotateX: -dy * 8, rotateY: dx * 10, scale: 1.01 })
+  }, [])
+
+  const height = isMobile ? '60%' : '92%'
+  const bottom = isMobile ? '22%' : '0'
+  const baseScale = isMobile ? 1.25 : 1.68
+
+  return (
+    <div
+      ref={wrapRef}
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleMouseLeave}
+      style={{
+        position: 'absolute',
+        aspectRatio: '0.6 / 1',
+        left: '50%',
+        height,
+        bottom,
+        zIndex: 20,
+        cursor: 'pointer',
+        // The carousel's own translateX(-50%) + scale lives here, then tilt on top
+        transform: `translateX(-50%) scale(${baseScale}) perspective(800px) rotateX(${tiltStyle.rotateX}deg) rotateY(${tiltStyle.rotateY}deg) scale(${tiltStyle.scale})`,
+        transition: isCarouselAnimating
+          ? 'transform 650ms cubic-bezier(0.4,0,0.2,1), filter 650ms, opacity 650ms, left 650ms, bottom 650ms, height 650ms'
+          : 'transform 80ms linear',
+        willChange: 'transform',
+        transformOrigin: 'center bottom',
+      }}
+    >
+      <img
+        src={src}
+        alt={alt}
+        draggable={false}
+        style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'bottom center', userSelect: 'none', pointerEvents: 'none' }}
+      />
+      {/* Subtle drop shadow that reacts to tilt */}
+      <div style={{
+        position: 'absolute',
+        bottom: -8,
+        left: '10%',
+        right: '10%',
+        height: 24,
+        background: 'rgba(0,0,0,0.18)',
+        borderRadius: '50%',
+        filter: 'blur(12px)',
+        transform: `scaleX(${1 + tiltStyle.rotateY * 0.01}) translateX(${tiltStyle.rotateY * 1.5}px)`,
+        transition: 'transform 80ms linear',
+        pointerEvents: 'none',
+      }} />
+    </div>
+  )
+}
+
 // ─── Stat Bar ─────────────────────────────────────────────────────────────────
 
 function StatBar({ stat, delay }: { stat: StatItem; delay: number }) {
@@ -181,7 +380,17 @@ function StatBar({ stat, delay }: { stat: StatItem; delay: number }) {
 
 // ─── Character Panel ─────────────────────────────────────────────────────────
 
-function CharacterPanel({ item, visible, onClose }: { item: FigurineItem; visible: boolean; onClose: () => void }) {
+function CharacterPanel({
+  item,
+  visible,
+  onClose,
+  onCollect,
+}: {
+  item: FigurineItem
+  visible: boolean
+  onClose: () => void
+  onCollect: () => void
+}) {
   const c = item.character
   const [statsKey, setStatsKey] = useState(0)
   useEffect(() => { if (visible) setStatsKey((k) => k + 1) }, [visible])
@@ -194,16 +403,14 @@ function CharacterPanel({ item, visible, onClose }: { item: FigurineItem; visibl
         style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 80, opacity: visible ? 1 : 0, pointerEvents: visible ? 'auto' : 'none', transition: 'opacity 500ms cubic-bezier(0.4,0,0.2,1)' }}
       />
 
-      {/* Slide-up sheet */}
+      {/* Sheet */}
       <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 90, transform: visible ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 550ms cubic-bezier(0.4,0,0.2,1)' }}>
         <div style={{ background: item.panelDark, borderRadius: '28px 28px 0 0', overflow: 'hidden', maxHeight: '88vh', display: 'flex', flexDirection: 'column' }}>
 
-          {/* Drag pill */}
           <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 4 }}>
             <div style={{ width: 40, height: 4, borderRadius: 99, background: 'rgba(255,255,255,0.3)' }} />
           </div>
 
-          {/* Content */}
           <div style={{ overflowY: 'auto', padding: '0 24px 40px', flex: 1 }}>
 
             {/* Name + close */}
@@ -246,9 +453,10 @@ function CharacterPanel({ item, visible, onClose }: { item: FigurineItem; visibl
 
             {/* CTA */}
             <button
-              style={{ width: '100%', padding: '18px 24px', borderRadius: 16, border: 'none', background: 'white', color: item.panelDark, fontFamily: "'Anton', sans-serif", fontSize: 18, letterSpacing: '0.04em', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'transform 150ms' }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.02)' }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)' }}
+              onClick={onCollect}
+              style={{ width: '100%', padding: '18px 24px', borderRadius: 16, border: 'none', background: 'white', color: item.panelDark, fontFamily: "'Anton', sans-serif", fontSize: 18, letterSpacing: '0.04em', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'transform 150ms, box-shadow 150ms', boxShadow: '0 4px 24px rgba(0,0,0,0.15)' }}
+              onMouseEnter={(e) => { const el = e.currentTarget as HTMLElement; el.style.transform = 'scale(1.02)'; el.style.boxShadow = '0 8px 32px rgba(0,0,0,0.22)' }}
+              onMouseLeave={(e) => { const el = e.currentTarget as HTMLElement; el.style.transform = 'scale(1)'; el.style.boxShadow = '0 4px 24px rgba(0,0,0,0.15)' }}
             >
               <Plus size={18} strokeWidth={2.5} />
               ADD TO COLLECTION
@@ -287,6 +495,7 @@ export default function ToonHubHero() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640)
   const [panelOpen, setPanelOpen] = useState(false)
+  const [confettiActive, setConfettiActive] = useState(false)
   const isAnimating = useRef(false)
 
   useEffect(() => {
@@ -314,11 +523,35 @@ export default function ToonHubHero() {
     }
   }, [panelOpen])
 
+  const handleCollect = useCallback(() => {
+    setConfettiActive(false)
+    // tiny delay to re-trigger if same character collected twice
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setConfettiActive(true))
+    })
+    // auto reset after burst
+    setTimeout(() => setConfettiActive(false), 2200)
+  }, [])
+
   const currentBg = IMAGES[activeIndex].bg
+  const confettiColors = [
+    IMAGES[activeIndex].bg,
+    IMAGES[activeIndex].panel,
+    '#ffffff',
+    '#fff0a0',
+    IMAGES[activeIndex].panelDark,
+    '#ffddee',
+  ]
 
   return (
     <>
-      <div style={{ backgroundColor: currentBg, transition: 'background-color 650ms cubic-bezier(0.4,0,0.2,1)', fontFamily: "'Inter', sans-serif" }} className="relative w-full overflow-hidden">
+      {/* Confetti lives outside everything at top level */}
+      <ConfettiBurst active={confettiActive} colors={confettiColors} />
+
+      <div
+        style={{ backgroundColor: currentBg, transition: 'background-color 650ms cubic-bezier(0.4,0,0.2,1)', fontFamily: "'Inter', sans-serif" }}
+        className="relative w-full overflow-hidden"
+      >
         <div className="relative w-full overflow-hidden" style={{ height: '100vh' }}>
 
           {/* Grain */}
@@ -332,22 +565,42 @@ export default function ToonHubHero() {
           {/* Brand */}
           <div className="absolute top-6 left-4 sm:left-8 text-xs font-semibold uppercase" style={{ zIndex: 60, color: 'white', opacity: 0.9, letterSpacing: '0.18em' }}>TOONHUB</div>
 
-          {/* Carousel */}
+          {/* Carousel — non-center figures */}
           <div className="absolute inset-0" style={{ zIndex: 3 }}>
             {IMAGES.map((item, i) => {
               const role = getRole(i, activeIndex)
+              if (role === 'center') return null // rendered separately below
               const s = getRoleStyle(role, isMobile)
-              const isCenter = role === 'center'
               return (
                 <div
                   key={i}
-                  onClick={isCenter ? () => setPanelOpen(true) : undefined}
-                  style={{ position: 'absolute', aspectRatio: '0.6 / 1', transform: s.transform, filter: s.filter, opacity: s.opacity, zIndex: s.zIndex, left: s.left, height: s.height, bottom: s.bottom, cursor: isCenter ? 'pointer' : 'default', transition: ['transform 650ms cubic-bezier(0.4,0,0.2,1)', 'filter 650ms cubic-bezier(0.4,0,0.2,1)', 'opacity 650ms cubic-bezier(0.4,0,0.2,1)', 'left 650ms cubic-bezier(0.4,0,0.2,1)', 'bottom 650ms cubic-bezier(0.4,0,0.2,1)', 'height 650ms cubic-bezier(0.4,0,0.2,1)'].join(', '), willChange: 'transform, filter, opacity' }}
+                  style={{
+                    position: 'absolute',
+                    aspectRatio: '0.6 / 1',
+                    transform: s.transform,
+                    filter: s.filter,
+                    opacity: s.opacity,
+                    zIndex: s.zIndex,
+                    left: s.left,
+                    height: s.height,
+                    bottom: s.bottom,
+                    transition: ['transform 650ms cubic-bezier(0.4,0,0.2,1)', 'filter 650ms cubic-bezier(0.4,0,0.2,1)', 'opacity 650ms cubic-bezier(0.4,0,0.2,1)', 'left 650ms cubic-bezier(0.4,0,0.2,1)', 'bottom 650ms cubic-bezier(0.4,0,0.2,1)', 'height 650ms cubic-bezier(0.4,0,0.2,1)'].join(', '),
+                    willChange: 'transform, filter, opacity',
+                  }}
                 >
                   <img src={item.src} alt={item.character.name} draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'bottom center', userSelect: 'none', pointerEvents: 'none' }} />
                 </div>
               )
             })}
+
+            {/* Center figure — separate component for tilt + idle float */}
+            <CenterFigure
+              src={IMAGES[activeIndex].src}
+              alt={IMAGES[activeIndex].character.name}
+              isMobile={isMobile}
+              onClick={() => setPanelOpen(true)}
+              isCarouselAnimating={isAnimating.current}
+            />
           </div>
 
           {/* Tap hint */}
@@ -376,7 +629,12 @@ export default function ToonHubHero() {
         </div>
       </div>
 
-      <CharacterPanel item={IMAGES[activeIndex]} visible={panelOpen} onClose={() => setPanelOpen(false)} />
+      <CharacterPanel
+        item={IMAGES[activeIndex]}
+        visible={panelOpen}
+        onClose={() => setPanelOpen(false)}
+        onCollect={handleCollect}
+      />
     </>
   )
 }
