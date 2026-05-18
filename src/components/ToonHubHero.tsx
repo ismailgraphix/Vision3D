@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { ArrowLeft, ArrowRight, Star, Zap, Shield, Flame, Plus } from 'lucide-react'
 import figurine1 from '../images/ChatGPT Image May 17, 2026, 06_07_08 PM.png'
 import figurine2 from '../images/ChatGPT Image May 17, 2026, 06_37_39 PM.png'
-import figurine3 from '../images/ChatGPT Image May 17, 2026, 06_40_45 PM.png'
+import figurine3 from '../images/ChatGPT Image May 18, 2026, 09_24_35 PM.png'
 import figurine4 from '../images/ChatGPT Image May 17, 2026, 06_07_08 PM.png'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -145,7 +145,7 @@ function getRole(i: number, activeIndex: number): Role {
 function getRoleStyle(role: Role, isMobile: boolean): RoleStyle {
   switch (role) {
     case 'center':
-      return { transform: `translateX(-50%) scale(${isMobile ? 1.25 : 1.68})`, filter: 'none', opacity: 1, zIndex: 20, left: '50%', height: isMobile ? '60%' : '92%', bottom: isMobile ? '22%' : '0' }
+      return { transform: 'translateX(-50%)', filter: 'none', opacity: 1, zIndex: 20, left: '50%', height: isMobile ? '75%' : '95%', bottom: isMobile ? '0' : '0' }
     case 'left':
       return { transform: 'translateX(-50%) scale(1)', filter: 'blur(2px)', opacity: 0.85, zIndex: 10, left: isMobile ? '20%' : '30%', height: isMobile ? '16%' : '28%', bottom: isMobile ? '32%' : '12%' }
     case 'right':
@@ -303,9 +303,11 @@ function CenterFigure({
 
   const height = isMobile ? '60%' : '92%'
   const bottom = isMobile ? '22%' : '0'
-  const baseScale = isMobile ? 1.25 : 1.68
+  const baseScale = 1
 
   return (
+    // Outer: exactly the same positioning as the original non-tilt center item.
+    // translateX(-50%) + scale in ONE transform, transformOrigin bottom — do not split these.
     <div
       ref={wrapRef}
       onClick={onClick}
@@ -321,10 +323,13 @@ function CenterFigure({
         bottom,
         zIndex: 20,
         cursor: 'pointer',
-        // The carousel's own translateX(-50%) + scale lives here, then tilt on top
-        transform: `translateX(-50%) scale(${baseScale}) perspective(800px) rotateX(${tiltStyle.rotateX}deg) rotateY(${tiltStyle.rotateY}deg) scale(${tiltStyle.scale})`,
+        // Keep translateX + scale together (same as original) so bottom-anchoring works.
+        // Add perspective + tilt on top — all in one transform chain.
+        transform: isCarouselAnimating
+          ? `translateX(-50%) scale(${baseScale})`
+          : `translateX(-50%) scale(${baseScale}) perspective(900px) rotateX(${tiltStyle.rotateX}deg) rotateY(${tiltStyle.rotateY}deg)`,
         transition: isCarouselAnimating
-          ? 'transform 650ms cubic-bezier(0.4,0,0.2,1), filter 650ms, opacity 650ms, left 650ms, bottom 650ms, height 650ms'
+          ? 'transform 650ms cubic-bezier(0.4,0,0.2,1), left 650ms, bottom 650ms, height 650ms'
           : 'transform 80ms linear',
         willChange: 'transform',
         transformOrigin: 'center bottom',
@@ -336,7 +341,7 @@ function CenterFigure({
         draggable={false}
         style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'bottom center', userSelect: 'none', pointerEvents: 'none' }}
       />
-      {/* Subtle drop shadow that reacts to tilt */}
+      {/* Drop shadow that shifts with tilt */}
       <div style={{
         position: 'absolute',
         bottom: -8,
@@ -346,8 +351,8 @@ function CenterFigure({
         background: 'rgba(0,0,0,0.18)',
         borderRadius: '50%',
         filter: 'blur(12px)',
-        transform: `scaleX(${1 + tiltStyle.rotateY * 0.01}) translateX(${tiltStyle.rotateY * 1.5}px)`,
-        transition: 'transform 80ms linear',
+        transform: `translateX(${tiltStyle.rotateY * 1.5}px)`,
+        transition: isCarouselAnimating ? 'none' : 'transform 80ms linear',
         pointerEvents: 'none',
       }} />
     </div>
@@ -552,7 +557,7 @@ export default function ToonHubHero() {
         style={{ backgroundColor: currentBg, transition: 'background-color 650ms cubic-bezier(0.4,0,0.2,1)', fontFamily: "'Inter', sans-serif" }}
         className="relative w-full overflow-hidden"
       >
-        <div className="relative w-full overflow-hidden" style={{ height: '100vh' }}>
+        <div className="relative w-full" style={{ height: '100vh', overflow: 'clip' }}>
 
           {/* Grain */}
           <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 50, opacity: 0.4, backgroundImage: grainDataURI, backgroundSize: '200px 200px', backgroundRepeat: 'repeat' }} />
