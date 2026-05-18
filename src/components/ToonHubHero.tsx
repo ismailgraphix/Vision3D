@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, Star, Zap, Shield, Flame, Plus } from 'lucide-re
 import figurine1 from '../images/ChatGPT Image May 17, 2026, 06_07_08 PM.png'
 import figurine2 from '../images/ChatGPT Image May 17, 2026, 06_37_39 PM.png'
 import figurine3 from '../images/ChatGPT Image May 18, 2026, 09_24_35 PM.png'
-import figurine4 from '../images/ChatGPT Image May 17, 2026, 06_07_08 PM.png'
+import figurine4 from '../images/ChatGPT Image May 18, 2026, 09_48_48 PM.png'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
