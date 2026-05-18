@@ -5,8 +5,6 @@ import figurine2 from '../images/ChatGPT Image May 17, 2026, 06_37_39 PM.png'
 import figurine3 from '../images/ChatGPT Image May 18, 2026, 09_24_35 PM.png'
 import figurine4 from '../images/ChatGPT Image May 18, 2026, 09_48_48 PM.png'
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
 type Role = 'center' | 'left' | 'right' | 'back'
 
 interface RoleStyle {
@@ -52,12 +50,12 @@ const IMAGES: FigurineItem[] = [
     panel: '#F79B7F',
     panelDark: '#c45a35',
     character: {
-      name: 'BLAZER',
-      class: 'Fire Warrior',
+      name: 'HAJI SAMA',
+      class: 'Elder of the North',
       edition: 'Limited Ed. #001',
-      series: 'Series I — Ignition',
-      lore: 'Forged in the heart of the Emberstone Crater, Blazer channels raw volcanic energy into every strike. Collectors prize this first-run cast for its hand-finished lava detailing and glow-in-the-dark ember eyes.',
-      tag: '🔥 Fan Favourite',
+      series: 'Series I — The Sama Chronicles',
+      lore: 'Haji Sama is the eldest of the Sama lineage — a title earned not by birth but by the weight of journeys completed. "Haji" in the Hausa tradition honours one who has crossed great distances and returned carrying wisdom heavier than gold. Sama, meaning sky, reflects his boundless perspective: he sees conflict from above, where all feuds look small. His figurine is cast in aged bronze resin with a hand-painted pilgrim staff and flowing northern robes that billow as if caught in a desert wind. Every collector who holds him is said to inherit a fragment of his patience.',
+      tag: '🕌 Elder & Pilgrim',
       stats: [
         { label: 'Power', value: 92, icon: <Flame size={12} /> },
         { label: 'Speed', value: 78, icon: <Zap size={12} /> },
@@ -72,12 +70,12 @@ const IMAGES: FigurineItem[] = [
     panel: '#85CC92',
     panelDark: '#3d8f4f',
     character: {
-      name: 'GROVE',
-      class: 'Nature Guardian',
+      name: 'CAPTAIN SAMA',
+      class: 'Commander of the Skies',
       edition: 'Standard Ed. #002',
-      series: 'Series I — Ignition',
-      lore: 'Born from the roots of the Ancient Verdant Tree, Grove commands the forest floor. Each figurine is cast in bio-resin with real pressed botanicals embedded in the base — no two are identical.',
-      tag: '🌿 Eco Cast',
+      series: 'Series I — The Sama Chronicles',
+      lore: 'Captain Sama earned his rank on no ordinary battlefield — he led the first aerial expedition across the Saharan Rift, navigating storms that swallowed lesser pilots whole. His name fuses military command with the Sama sky heritage: he does not just fly through the heavens, he governs them. Sculpted in deep forest green with gold rank insignia and a visor that catches every light source in the room, his figurine captures the moment before takeoff — coiled energy, absolute stillness. Among the Sama siblings, he is the one they call when the odds are impossible.',
+      tag: '✈️ Sky Commander',
       stats: [
         { label: 'Power', value: 70, icon: <Flame size={12} /> },
         { label: 'Speed', value: 55, icon: <Zap size={12} /> },
@@ -92,12 +90,12 @@ const IMAGES: FigurineItem[] = [
     panel: '#ED9DC4',
     panelDark: '#b34d86',
     character: {
-      name: 'PRISM',
-      class: 'Arcane Mage',
+      name: 'SARKI SAMA',
+      class: 'King of the Sama Realm',
       edition: 'Rare Ed. #003',
-      series: 'Series I — Ignition',
-      lore: 'Prism bends light itself to her will. Cast in UV-reactive crystal-clear resin with iridescent internal shimmer, she shifts colour under different lighting — making every display setup a unique experience.',
-      tag: '✨ UV Reactive',
+      series: 'Series I — The Sama Chronicles',
+      lore: 'Sarki — king in Hausa — is not a title Sarki Sama was given. It is one he built, word by word, decision by decision, until the land had no other name for him. He rules not with fear but with the kind of quiet authority that makes rooms go still when he enters. The Sama in his name is both family and philosophy: the sky does not argue with storms, it outlasts them. His figurine is the rarest in the series — cast in iridescent UV-reactive resin that shifts from deep violet to rose gold depending on the light, representing a ruler whose true nature only reveals itself under pressure. The crown on his base is hand-gilded by a single artisan.',
+      tag: '👑 The Rare King',
       stats: [
         { label: 'Power', value: 88, icon: <Flame size={12} /> },
         { label: 'Speed', value: 82, icon: <Zap size={12} /> },
@@ -112,12 +110,12 @@ const IMAGES: FigurineItem[] = [
     panel: '#8DC4FF',
     panelDark: '#3474cc',
     character: {
-      name: 'VOLT',
-      class: 'Storm Runner',
+      name: 'SAMA GARKI',
+      class: 'Guardian of the Threshold',
       edition: 'Standard Ed. #004',
-      series: 'Series I — Ignition',
-      lore: 'Volt races ahead of the storm — literally. His chrome finish is vacuum-metallised in three layers, giving him a mirror sheen that reflects every colour in the room. The lightning-bolt base doubles as a wireless charging pad.',
-      tag: '⚡ Tech Edition',
+      series: 'Series I — The Sama Chronicles',
+      lore: 'Where the other Sama figures look outward — at journeys, at skies, at kingdoms — Sama Garki looks inward at the gate. Garki in the northern tongue means the one who guards, the keeper of what must not pass. He is the youngest of the Sama lineage but carries the heaviest post: protecting the boundary between the world the family built and everything that would undo it. His chrome-blue figurine is forged to look like living armour — vacuum-metallised in three layers so it mirrors the room around it, a reminder that a true guardian reflects the environment he protects. His base is shaped like a threshold arch. You do not step around him. You step through him only if he allows it.',
+      tag: '🛡️ The Gatekeeper',
       stats: [
         { label: 'Power', value: 75, icon: <Flame size={12} /> },
         { label: 'Speed', value: 99, icon: <Zap size={12} /> },
@@ -496,7 +494,7 @@ function NavButton({ onClick, 'aria-label': ariaLabel, children }: NavButtonProp
 
 // ─── Main Hero ────────────────────────────────────────────────────────────────
 
-export default function ToonHubHero() {
+export default function Vision3DHero() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640)
   const [panelOpen, setPanelOpen] = useState(false)
@@ -568,7 +566,7 @@ export default function ToonHubHero() {
           </div>
 
           {/* Brand */}
-          <div className="absolute top-6 left-4 sm:left-8 text-xs font-semibold uppercase" style={{ zIndex: 60, color: 'white', opacity: 0.9, letterSpacing: '0.18em' }}>TOONHUB</div>
+          <div className="absolute top-6 left-4 sm:left-8 text-xs font-semibold uppercase" style={{ zIndex: 60, color: 'white', opacity: 0.9, letterSpacing: '0.18em' }}>VISION3D</div>
 
           {/* Carousel — non-center figures */}
           <div className="absolute inset-0" style={{ zIndex: 3 }}>
@@ -617,7 +615,7 @@ export default function ToonHubHero() {
 
           {/* Bottom left */}
           <div className="absolute bottom-6 left-4 sm:bottom-20 sm:left-24" style={{ zIndex: 60, maxWidth: 320 }}>
-            <p className="font-bold uppercase mb-2 sm:mb-3 text-base sm:text-[22px]" style={{ color: 'white', opacity: 0.95, letterSpacing: '0.02em', lineHeight: 1.2 }}>TOONHUB FIGURINES</p>
+            <p className="font-bold uppercase mb-2 sm:mb-3 text-base sm:text-[22px]" style={{ color: 'white', opacity: 0.95, letterSpacing: '0.02em', lineHeight: 1.2 }}>VISION3D FIGURINES</p>
             <p className="hidden sm:block text-xs sm:text-sm mb-4 sm:mb-5" style={{ color: 'white', opacity: 0.85, lineHeight: 1.6 }}>The artwork is stunning, shipped fully prepared. The finish is a vision, the 3D craft is flawless. Many thanks! Wishing you the win. Order now.</p>
             <div className="flex items-center gap-3">
               <NavButton onClick={() => navigate('prev')} aria-label="Previous"><ArrowLeft size={26} strokeWidth={2.25} /></NavButton>
