@@ -3,7 +3,9 @@ import { ArrowLeft, ArrowRight, Star, Zap, Shield, Flame, Plus } from 'lucide-re
 import figurine1 from '../images/ChatGPT Image May 17, 2026, 06_07_08 PM.png'
 import figurine2 from '../images/ChatGPT Image May 17, 2026, 06_37_39 PM.png'
 import figurine3 from '../images/ChatGPT Image May 18, 2026, 09_24_35 PM.png'
-import figurine4 from '../images/ChatGPT Image May 18, 2026, 09_48_48 PM.png'
+import figurine4 from '../images/ChatGPT Image May 18, 2026, 09_48_48 PM.png'     
+
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 type Role = 'center' | 'left' | 'right' | 'back'
 
@@ -110,12 +112,12 @@ const IMAGES: FigurineItem[] = [
     panel: '#8DC4FF',
     panelDark: '#3474cc',
     character: {
-      name: 'SAMA GARKI',
-      class: 'Guardian of the Threshold',
+      name: 'SAMAILA GARKI',
+      class: 'Sentinel of the Bloodline',
       edition: 'Standard Ed. #004',
       series: 'Series I — The Sama Chronicles',
-      lore: 'Where the other Sama figures look outward — at journeys, at skies, at kingdoms — Sama Garki looks inward at the gate. Garki in the northern tongue means the one who guards, the keeper of what must not pass. He is the youngest of the Sama lineage but carries the heaviest post: protecting the boundary between the world the family built and everything that would undo it. His chrome-blue figurine is forged to look like living armour — vacuum-metallised in three layers so it mirrors the room around it, a reminder that a true guardian reflects the environment he protects. His base is shaped like a threshold arch. You do not step around him. You step through him only if he allows it.',
-      tag: '🛡️ The Gatekeeper',
+      lore: 'Samaila Garki carries two names and they tell the whole story. Samaila — the Hausa form of Ishmael — speaks of endurance, of the one sent into the wilderness who does not perish but multiplies. Garki adds the second truth: guardian, the one who stands at the edge of what belongs to his people and says no further. Together the name means a man who has survived every attempt to diminish him and now stands watch so no one else in his bloodline has to endure the same. His figurine is cast in layered chrome-blue resin — cold on the surface, but hold it under direct light and you see warm amber glowing from within, the fire that outlasted the storm. The base bears the inscription: He did not survive to rest. He survived to remain.',
+      tag: '🛡️ Bloodline Sentinel',
       stats: [
         { label: 'Power', value: 75, icon: <Flame size={12} /> },
         { label: 'Speed', value: 99, icon: <Zap size={12} /> },
@@ -560,9 +562,9 @@ export default function Vision3DHero() {
           {/* Grain */}
           <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 50, opacity: 0.4, backgroundImage: grainDataURI, backgroundSize: '200px 200px', backgroundRepeat: 'repeat' }} />
 
-          {/* Ghost text */}
-          <div className="absolute inset-x-0 flex items-center justify-center pointer-events-none select-none" style={{ zIndex: 2, top: '18%', fontFamily: "'Anton', sans-serif", fontSize: 'clamp(90px, 28vw, 380px)', fontWeight: 900, color: 'white', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
-            3D SHAPE
+          {/* Ghost text — active character name */}
+          <div className="absolute inset-x-0 flex items-center justify-center pointer-events-none select-none" style={{ zIndex: 2, top: '18%', fontFamily: "'Anton', sans-serif", fontSize: 'clamp(52px, 16vw, 260px)', fontWeight: 900, color: 'white', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '-0.02em', whiteSpace: 'nowrap', transition: 'opacity 300ms cubic-bezier(0.4,0,0.2,1)', opacity: 0.18 }}>
+            {IMAGES[activeIndex].character.name}
           </div>
 
           {/* Brand */}
