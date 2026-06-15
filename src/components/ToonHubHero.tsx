@@ -496,7 +496,7 @@ function NavButton({ onClick, 'aria-label': ariaLabel, children }: NavButtonProp
 
 // ─── Main Hero ────────────────────────────────────────────────────────────────
 
-export default function Vision3DHero() {
+export default function SamaUniverseHero() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640)
   const [panelOpen, setPanelOpen] = useState(false)
@@ -568,7 +568,7 @@ export default function Vision3DHero() {
           </div>
 
           {/* Brand */}
-          <div className="absolute top-6 left-4 sm:left-8 text-xs font-semibold uppercase" style={{ zIndex: 60, color: 'white', opacity: 0.9, letterSpacing: '0.18em' }}>VISION3D</div>
+          <div className="absolute top-6 left-4 sm:left-8 text-xs font-semibold uppercase" style={{ zIndex: 60, color: 'white', opacity: 0.9, letterSpacing: '0.18em' }}>SAMA UNIVERSE</div>
 
           {/* Carousel — non-center figures */}
           <div className="absolute inset-0" style={{ zIndex: 3 }}>
@@ -617,7 +617,7 @@ export default function Vision3DHero() {
 
           {/* Bottom left */}
           <div className="absolute bottom-6 left-4 sm:bottom-20 sm:left-24" style={{ zIndex: 60, maxWidth: 320 }}>
-            <p className="font-bold uppercase mb-2 sm:mb-3 text-base sm:text-[22px]" style={{ color: 'white', opacity: 0.95, letterSpacing: '0.02em', lineHeight: 1.2 }}>VISION3D FIGURINES</p>
+            <p className="font-bold uppercase mb-2 sm:mb-3 text-base sm:text-[22px]" style={{ color: 'white', opacity: 0.95, letterSpacing: '0.02em', lineHeight: 1.2 }}>SAMA UNIVERSE FIGURINES</p>
             <p className="hidden sm:block text-xs sm:text-sm mb-4 sm:mb-5" style={{ color: 'white', opacity: 0.85, lineHeight: 1.6 }}>The artwork is stunning, shipped fully prepared. The finish is a vision, the 3D craft is flawless. Many thanks! Wishing you the win. Order now.</p>
             <div className="flex items-center gap-3">
               <NavButton onClick={() => navigate('prev')} aria-label="Previous"><ArrowLeft size={26} strokeWidth={2.25} /></NavButton>
